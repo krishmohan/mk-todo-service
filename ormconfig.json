@@ -1,12 +1,12 @@
 {
     "type": "postgres",
-    "host": "localhost",
+    "host": "ec2-174-129-209-212.compute-1.amazonaws.com",
     "port": 5432,
-    "username": "postgres",
-    "password": "",
-    "database": "mk-url-shortener",
+    "username": "cnppmrcvubbdgz",
+    "password": "5433c136ea9fe305a01519a43aefb82612c9196339a474ae9ee9a5e567fb7615",
+    "database": "d4b3dh0ft092gg",
     "synchronize": true,
-    "logging": true,
+    "logging": false,
     "entities": [
         "src/**/**/*.entity.ts",
         "./dist/**/**/*.entity.js"
@@ -18,5 +18,8 @@
     "subscribers": [
         "src/subscriber/**/*.entity.ts",
         "./dist/**/**/*.entity.js"
-    ]
+    ],
+    "extra": {
+        "ssl": true
+    }
 }
