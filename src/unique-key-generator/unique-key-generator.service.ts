@@ -44,6 +44,14 @@ export class UniqueKeyGeneratorService {
         }
     }
 
+    public async markAsAvailable(uniqueKey: string) {
+        this.uniqueKeyEntityRepo.createQueryBuilder()
+            .update(UniqueKeyEntity)
+            .set({ available: true })
+            .where("uniqueKey = :value", { value: uniqueKey })
+            .execute();
+    }
+
     private static base10Tobase62(value: number): string {
         let base62Value = '';
         while (value > 0) {
