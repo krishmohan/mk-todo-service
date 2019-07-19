@@ -17,7 +17,11 @@ export class UrlService {
         return urlEntity;
     }
 
-    public async findURL(key: string) {
-        return await this.urlRepository.findOne({ shortUrl: key });
+    public async findURL(shortUrl: string) {
+        return await this.urlRepository.findOne({ shortUrl });
+    }
+
+    public async deleteURL(shortUrl: string) {
+        return await this.urlRepository.delete({ shortUrl });
     }
 }
