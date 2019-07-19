@@ -1,6 +1,6 @@
 import { UniqueKeyGeneratorService } from './../unique-key-generator/unique-key-generator.service';
 import { UrlService } from './url.service';
-import { Controller, Post, Get, Body, Res, Param } from '@nestjs/common';
+import { Controller, Post, Get, Body, Res, Param, InternalServerErrorException, NotFoundException } from '@nestjs/common';
 import { URLDTO } from './url.dto';
 import * as express from 'express';
 
@@ -13,17 +13,21 @@ export class UrlController {
     ) { }
 
     @Post()
-    createShortURL(@Body() createShortURLDTO: URLDTO) {
-        this.uniqueKeyGeneratorService.getAvailableKey().then((data) => {
-            createShortURLDTO.shortUrl = data.uniqueKey;
-            return this.urlService.createURL(createShortURLDTO);
-        });
+    async createShortURL(@Body() createShortURLDTO: URLDTO) {
+        const uniqueKey = await this.uniqueKeyGeneratorService.getAvailableKey();
+        if (!uniqueKey) {
+            throw new InternalServerErrorException("Short url not available");
+        }
+        createShortURLDTO.shortUrl = uniqueKey;
+        return await this.urlService.createURL(createShortURLDTO);
     }
 
     @Get(":id")
-    redirectToOriginalURL(@Param("id") id: string, @Res() res: express.Response) {
-        this.urlService.findURL(id).then((data) => {
-            return res.redirect(data.longUrl);
-        });
+    async redirectToOriginalURL(@Param("id") id: string, @Res() res: express.Response) {
+        const urlData = await this.urlService.findURL(id);
+        if (!urlData) {
+            throw new NotFoundException("URL Not Found!!");
+        }
+        return res.redirect(urlData.longUrl);
     }
 }

@@ -1,4 +1,4 @@
-import { Injectable } from '@nestjs/common';
+import { Injectable, Logger } from '@nestjs/common';
 import { Repository } from 'typeorm';
 import { UniqueKeyEntity } from './unique-key.entity';
 import { InjectRepository } from '@nestjs/typeorm';
@@ -31,7 +31,17 @@ export class UniqueKeyGeneratorService {
     }
 
     public async getAvailableKey() {
-        return await this.uniqueKeyEntityRepo.findOne({ available: true }, { order: { id: "DESC" } });
+        try {
+            const uniqueKeyEntity = await this.uniqueKeyEntityRepo.findOne({ available: true }, { order: { id: "DESC" } });
+            if (uniqueKeyEntity) {
+                uniqueKeyEntity.available = false;
+                uniqueKeyEntity.save();
+                return uniqueKeyEntity.uniqueKey;
+            }
+            return null;
+        } catch (err) {
+            Logger.error("Error while getting unique key from DB: ", err);
+        }
     }
 
     private static base10Tobase62(value: number): string {
